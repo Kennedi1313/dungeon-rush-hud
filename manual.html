@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dungeon Rush: Manual de Regras</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap');
+        
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        @page {
+            size: A4;
+            margin: 20mm 15mm;
+            background-color: #f4ebd8;
+        }
+        body {
+            font-family: 'Georgia', serif;
+            color: #2b1f1a;
+            line-height: 1.4;
+            font-size: 10.5pt;
+            margin: 0;
+            padding: 32px 18px 48px;
+            background: linear-gradient(180deg, #150d0d 0%, #110b0d 100%);
+            display: flex;
+            justify-content: center;
+        }
+
+        .page-shell {
+            width: min(100%, 1100px);
+            margin: 0 auto;
+            background: #f7f1e3;
+            border: 1px solid rgba(76, 43, 30, 0.35);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+        }
+
+        .paper {
+            position: relative;
+            background: #f7f1e3;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', sans-serif;
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+        
+        .header-banner {
+            background-color: #3b0909;
+            color: #f4ebd8;
+            padding: 24px 32px 20px;
+            margin: 0;
+            text-align: center;
+            border-bottom: 5px solid #a87c2b;
+        }
+
+        .manual-body {
+            padding: 26px 28px 28px;
+        }
+
+        .return-button {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            z-index: 2;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.06);
+            color: #f3e9d2;
+            font-size: 0.8rem;
+            padding: 8px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .return-button:hover {
+            background: rgba(255, 255, 255, 0.13);
+        }
+        
+        .header-banner h1 {
+            margin: 0;
+            font-size: 32pt;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-family: 'Cinzel', 'Georgia', serif;
+        }
+        .header-banner p {
+            margin: 5px 0 0 0;
+            font-size: 14pt;
+            color: #d1b477;
+            font-family: 'Cinzel', 'Georgia', serif;
+        }
+
+        .intro {
+            font-size: 11pt;
+            margin-bottom: 20px;
+            text-align: justify;
+            background-color: #eadebe;
+            padding: 15px;
+            border-left: 4px solid #3b0909;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .dropcap {
+            font-size: 3.5em;
+            float: left;
+            margin-right: 8px;
+            margin-bottom: -5px;
+            padding-right: 4px;
+            color: #3b0909;
+            line-height: 0.8;
+            font-family: 'Cinzel', 'Trebuchet MS', serif;
+            font-weight: bold;
+        }
+
+        .columns {
+            column-count: 2;
+            column-gap: 8mm;
+            text-align: justify;
+        }
+
+        h2 {
+            font-size: 13pt;
+            color: #3b0909;
+            border-bottom: 2px solid #a87c2b;
+            padding-bottom: 3px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        h3 {
+            font-size: 11pt;
+            color: #6e2714;
+            margin-top: 10px;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        ul {
+            margin-top: 4px;
+            margin-bottom: 8px;
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 4px;
+        }
+
+        .bold-term {
+            font-weight: bold;
+            color: #3b0909;
+        }
+        
+        .table-container {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9.5pt;
+            margin-top: 5px;
+            border: 1px solid #8f7253;
+        }
+        th, td {
+            border: 1px solid #8f7253;
+            padding: 5px 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #5c2014;
+            color: #f4ebd8;
+            font-family: 'Trebuchet MS', sans-serif;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #eadebe;
+        }
+        tr:nth-child(odd) {
+            background-color: #f4ebd8;
+        }
+
+        .note-box {
+            background-color: #e3d2b1;
+            border: 1px dashed #8f7253;
+            padding: 8px;
+            font-size: 9.5pt;
+            font-style: italic;
+            margin-top: 5px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .variant-section {
+            column-span: all;
+            background-color: #2b1f1a;
+            color: #f4ebd8;
+            padding: 15px;
+            margin-top: 20px;
+            border: 2px solid #a87c2b;
+            border-radius: 5px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        
+        .variant-section h2 {
+            color: #eadebe;
+            border-bottom: 2px solid #a87c2b;
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .variant-box {
+            background-color: #3f2e27;
+            padding: 12px;
+            margin-top: 10px;
+            border-left: 4px solid #a87c2b;
+        }
+        .variant-box h3 {
+            color: #d1b477;
+            margin-top: 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <div class="paper">
+            <button class="return-button" type="button" data-action="return-home">Voltar ao menu</button>
+
+            <div class="header-banner">
+                <h1>Dungeon Rush</h1>
+                <p>Manual de Regras</p>
+            </div>
+
+            <div class="manual-body">
+                <div class="intro">
+                    <span class="dropcap">D</span>ungeon Rush é um jogo cooperativo de combate tático em masmorras para grupos de 3 heróis contra 1 Mestre da Dungeon. Os jogadores controlam heróis únicos e precisam sobreviver a 10 salas para vencer. O Mestre controla as forças da masmorra e vence se todos os heróis morrerem.
+                </div>
+
+                <div class="columns">
+                    
+                    <h2>1. Estrutura da Masmorra</h2>
+                    <p>A jornada é linear e dividida em 10 salas consecutivas:</p>
+                    <ul>
+                        <li><span class="bold-term">Salas 1 a 5 (Início):</span> Heróis começam no Nível 1.</li>
+                        <li><span class="bold-term">Após a Sala 5:</span> Todos os heróis sobem automaticamente para o <strong>Nível 2</strong> (ganham acesso apenas às novas habilidades de Nível 2 descritas nas cartas; PV e bônus permanecem inalterados).</li>
+                        <li><span class="bold-term">Salas 6 a 9:</span> Dungeon Avançada.</li>
+                        <li><span class="bold-term">Sala 10:</span> A Batalha Final contra o Boss.</li>
+                    </ul>
+
+                    <h2>2. O Teste de Sorte</h2>
+                    <p>Antes de entrar em qualquer sala (exceto na Sala 10), um dos heróis rola 1d20. O resultado determina o orçamento de Pontos de Ameaça do Mestre ou se o grupo encontrou uma sala segura.</p>
+
+                    <div class="table-container">
+                        <h3>Salas 1 a 5 (Início)</h3>
+                        <table>
+                            <tr>
+                                <th width="25%">Dado</th>
+                                <th>Efeito na Sala</th>
+                            </tr>
+                            <tr>
+                                <td><strong>1</strong></td>
+                                <td><strong>Pacto de Sangue:</strong> Herói morre imediatamente (sem combate).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2 a 6</strong></td>
+                                <td><strong>15</strong> Pts. de Ameaça.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>7 a 12</strong></td>
+                                <td><strong>10</strong> Pts. de Ameaça.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>13 a 16</strong></td>
+                                <td><strong>7</strong> Pts. de Ameaça.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>17 a 19</strong></td>
+                                <td><strong>Baú:</strong> Comprar 1 carta de Poção.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>20</strong></td>
+                                <td><strong>Bênção:</strong> Reviver com 5 PV <em>OU</em> 2 Poções.</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="table-container">
+                        <h3>Salas 6 a 9 (Avançada)</h3>
+                        <table>
+                            <tr>
+                                <th width="25%">Dado</th>
+                                <th>Efeito na Sala</th>
+                            </tr>
+                            <tr>
+                                <td><strong>1</strong></td>
+                                <td><strong>Pacto de Sangue:</strong> Herói morre imediatamente (sem combate).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2 a 6</strong></td>
+                                <td><strong>22</strong> Pts. de Ameaça.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>7 a 12</strong></td>
+                                <td><strong>16</strong> Pts. de Ameaça.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>13 a 16</strong></td>
+                                <td><strong>10</strong> Pts. de Ameaça.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>17 a 19</strong></td>
+                                <td><strong>Baú:</strong> Comprar 1 carta de Poção.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>20</strong></td>
+                                <td><strong>Bênção:</strong> Reviver com 5 PV <em>OU</em> 2 Poções.</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="note-box">
+                        <strong>Nota:</strong> O Deck de Poções tem cartas únicas. Se tirar Baú pela 5ª vez, ele estará vazio (grupo passa sem combater).
+                    </div>
+
+                    <h2>3. Regras do Mestre</h2>
+                    <p>O Mestre usa seus Pontos de Ameaça para comprar monstros:</p>
+                    <ul>
+                        <li><span class="bold-term">Cartas Únicas:</span> Não pode repetir monstro na mesma sala.</li>
+                        <li><span class="bold-term">Orçamento Estrito:</span> A soma do custo de ameaça não pode ultrapassar os pontos recebidos no Teste de Sorte.</li>
+                    </ul>
+
+                    <h2>4. O Sistema de Combate</h2>
+                    <p>Todos os monstros devem ser derrotados para avançar. O combate funciona em rodadas estruturadas:</p>
+                    <ol>
+                        <li><span class="bold-term">Iniciativa (INI):</span> Ordem decidida pelo valor da carta. Em empate, os heróis agem primeiro.</li>
+                        <li><span class="bold-term">Efeitos de Início:</span> Aplicam-se os efeitos contínuos da sala.</li>
+                        <li><span class="bold-term">Turno:</span> Cada um joga na ordem da INI.</li>
+                    </ol>
+
+                    <h3>Economia do Turno (Ações)</h3>
+                    <ul>
+                        <li><span class="bold-term">1 Ação Normal:</span> Usada para Ataque Básico ou ativar habilidade de turno inteiro.</li>
+                        <li><span class="bold-term">1 Ação Bônus:</span> Apenas para habilidades <em>(ação bônus)</em>. Limite de 1/turno.</li>
+                        <li><span class="bold-term">1 Reação:</span> Ativada fora do turno, conforme condição da carta. Limite de 1/rodada.</li>
+                    </ul>
+
+                    <h2>5. Ataques e Acertos</h2>
+                    <p>Não há distância. Alvos são focados livremente.</p>
+                    <ul>
+                        <li><span class="bold-term">Para Atacar:</span> Role 1d20.</li>
+                        <li><span class="bold-term">Acerto:</span> Se dado + bônus &ge; CA, acerta.</li>
+                        <li><span class="bold-term">Dano:</span> Role o dado de dano indicado + bônus.</li>
+                        <li><span class="bold-term">Vantagem/Desvantagem:</span> Role 2d20 e use o maior (Vantagem) ou menor (Desvantagem).</li>
+                    </ul>
+                    
+                    <h3>Regra de Alvo do Mestre</h3>
+                    <p>O Mestre tem foco livre, mas <strong>deve declarar o alvo</strong> antes de rolar, permitindo aos Heróis usar reações de proteção (Interceptar, Intervenção) de forma justa.</p>
+
+                    <h2>6. Recompensas (Poções)</h2>
+                    <ul>
+                        <li><span class="bold-term">Gasto:</span> Usar consome a Ação Normal.</li>
+                        <li><span class="bold-term">Restrição:</span> <strong>Proibido</strong> usar na Sala 10 (Boss).</li>
+                    </ul>
+
+                    <h2>7. Estados de Status</h2>
+                    <ul>
+                        <li><span class="bold-term">Atordoado:</span> Não age. Ataques contra ele têm Vantagem.</li>
+                        <li><span class="bold-term">Restrito:</span> Ataques contra ele têm Vantagem.</li>
+                        <li><span class="bold-term">Amedrontado:</span> Ataques realizados por ele têm Desvantagem.</li>
+                        <li><span class="bold-term">Inspiração:</span> Recebe Vantagem em seus ataques (até fim do efeito).</li>
+                    </ul>
+
+                    <h2>8. Morte e Vitória</h2>
+                    <ul>
+                        <li><span class="bold-term">Morte do Herói:</span> Com 0 PV, é removido (salvo por habilidade de carta).</li>
+                        <li><span class="bold-term">Vitória do Mestre:</span> Todos os 3 heróis mortos ao mesmo tempo.</li>
+                        <li><span class="bold-term">Vitória dos Heróis:</span> Derrotar o Boss na Sala 10.</li>
+                    </ul>
+
+                </div>
+
+                <div class="variant-section">
+                    <h2>Variantes de Jogo (Modo Extra)</h2>
+                    <p style="text-align: center; font-size: 10.5pt; color: #d1b477;">Se não houver um grupo completo de 3 heróis, utilize estas adaptações.</p>
+                    
+                    <div class="columns" style="margin-top: 15px;">
+                        <div class="variant-box">
+                            <h3>Modo Duo (2 Heróis)</h3>
+                            <p>O Mestre terá facilidade para focar ataques. Exige cooperação.</p>
+                            <ul>
+                                <li><strong>Bônus de Coragem:</strong> +5 PV Máximos na ficha e 1 Poção de Cura adicional (compartilhada).</li>
+                                <li><strong>Orçamento:</strong> Subtraia -3 Pts. de Ameaça de qualquer Teste de Sorte.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="variant-box">
+                            <h3>Modo Solo (1 Herói)</h3>
+                            <p>O desafio definitivo. Você controla 1 herói lendário.</p>
+                            <ul>
+                                <li><strong>Bônus Extremo:</strong> +15 PV Máximos, +2 de INI e +1 Bônus de Acerto/Dano. Pode usar 2 Ações Normais/turno.</li>
+                                <li><strong>Orçamento:</strong> Subtraia -5 Pts. de Ameaça de qualquer Teste de Sorte.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const returnButton = document.querySelector('[data-action="return-home"]');
+        if (returnButton) {
+            returnButton.addEventListener('click', () => {
+                window.location.href = './index.html';
+            });
+        }
+    </script>
+</body>
+</html>
