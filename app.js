@@ -21,7 +21,9 @@ const routeMap = {
 
 const state = {
   screen: 'home',
+  lastRenderedScreen: null,
   selectedId: null,
+  modalDraft: null,
   game: null,
   selectedHeroIds: [],
   selectedMonsterIds: [],
@@ -42,6 +44,10 @@ function scheduleRender() {
 }
 
 function hydrateRoute() {
+  if (window.history && 'scrollRestoration' in window.history) {
+    window.history.scrollRestoration = 'manual';
+  }
+
   const hashKey = window.location.hash.replace('#', '').trim();
   const pageKey = hashKey || document.body.dataset.page || 'home';
   const mappedScreen = routeMap[pageKey] || 'home';
@@ -355,6 +361,7 @@ function startRoomCombat() {
 
   state.selectedId = null;
   state.screen = 'battle';
+  resetScrollToTop();
   render();
 }
 
@@ -377,6 +384,7 @@ function nextRoom() {
   state.selectedMonsterIds = [];
   state.selectedId = null;
   state.screen = 'roomPrep';
+  resetScrollToTop();
   render();
 }
 
@@ -713,13 +721,28 @@ function renderOutcomeScreen(result) {
   `;
 }
 
+function getDraftForSelected(selected) {
+  if (!selected) return null;
+
+  if (!state.modalDraft || state.modalDraft.id !== selected.id) {
+    state.modalDraft = {
+      id: selected.id,
+      hp: selected.hp,
+      statuses: [...selected.statuses],
+    };
+  }
+
+  return state.modalDraft;
+}
+
 function renderModal() {
   const selected = state.combatants.find((character) => character.id === state.selectedId);
   if (!selected) return '';
 
+  const draft = getDraftForSelected(selected);
   const statusButtons = Object.keys(statusMeta)
     .map((statusName) => {
-      const active = selected.statuses.includes(statusName);
+      const active = draft.statuses.includes(statusName);
       return `
         <button class="status-toggle ${active ? 'is-active' : ''}" data-status="${statusName}" data-action="toggle-status">
           ${statusName}
@@ -739,7 +762,7 @@ function renderModal() {
         <div class="detail-grid">
           <div class="detail-cell">
             <span class="detail-label">PV</span>
-            <span class="detail-value">${selected.hp} / ${selected.maxHp}</span>
+            <span class="detail-value">${draft.hp} / ${selected.maxHp}</span>
           </div>
           <div class="detail-cell">
             <span class="detail-label">CA</span>
@@ -759,7 +782,7 @@ function renderModal() {
           <span class="detail-label">Editar PV</span>
           <div class="hp-editor-row">
             <button class="hp-adjust" data-action="modify-hp" data-delta="-1" type="button">−</button>
-            <input class="hp-input" data-action="hp-input" type="number" min="0" max="${selected.maxHp}" value="${selected.hp}" />
+            <input class="hp-input" data-action="hp-input" type="number" min="0" max="${selected.maxHp}" value="${draft.hp}" />
             <button class="hp-adjust" data-action="modify-hp" data-delta="1" type="button">+</button>
           </div>
         </div>
@@ -767,6 +790,11 @@ function renderModal() {
         <div>
           <span class="detail-label">Status</span>
           <div class="status-grid">${statusButtons}</div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="secondary-button" data-action="cancel-status-edits" type="button">Cancelar</button>
+          <button class="primary-button" data-action="confirm-status-edits" type="button">Confirmar</button>
         </div>
       </div>
     </div>
@@ -782,12 +810,27 @@ function syncLobbyButtonState() {
   startButton.disabled = !hasDungeonName || !hasHeroes;
 }
 
+function resetScrollToTop() {
+  try {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  } catch (error) {
+    console.warn('Não foi possível resetar o scroll:', error);
+  }
+}
+
 function render() {
   if (state.screen === 'battle') {
     const result = resolveBattleOutcome();
     if (result) {
       state.screen = result;
     }
+  }
+
+  const previousScreen = state.lastRenderedScreen;
+  if (previousScreen !== state.screen) {
+    resetScrollToTop();
   }
 
   let content = '';
@@ -822,6 +865,7 @@ function render() {
     syncLobbyButtonState();
   }
 
+  state.lastRenderedScreen = state.screen;
   saveState();
 }
 
@@ -835,11 +879,18 @@ function goToPage(pageKey, screenName) {
   } else {
     window.location.hash = targetHash;
   }
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   scheduleRender();
 }
 
 app.addEventListener('click', (event) => {
   const actionTarget = event.target.closest('[data-action]');
+  const modalPanel = event.target.closest('.character-panel');
+
+  if (actionTarget && actionTarget.classList.contains('dialog-backdrop') && modalPanel) {
+    return;
+  }
+
   if (!actionTarget) {
     const card = event.target.closest('.combatant-card');
     if (card) {
@@ -992,8 +1043,27 @@ app.addEventListener('click', (event) => {
     return;
   }
 
-  if (action === 'close-modal') {
+  if (action === 'close-modal' || action === 'cancel-status-edits') {
     state.selectedId = null;
+    state.modalDraft = null;
+    render();
+    return;
+  }
+
+  if (action === 'confirm-status-edits') {
+    const selected = state.combatants.find((character) => character.id === state.selectedId);
+    if (!selected) return;
+
+    const draft = getDraftForSelected(selected);
+    selected.hp = Math.max(0, Math.min(selected.maxHp, Number(draft.hp) || 0));
+    selected.statuses = [...draft.statuses];
+
+    if (selected.type === 'hero') {
+      syncHeroProgressFromCombatants();
+    }
+
+    state.selectedId = null;
+    state.modalDraft = null;
     render();
     return;
   }
@@ -1002,16 +1072,13 @@ app.addEventListener('click', (event) => {
     const selected = state.combatants.find((character) => character.id === state.selectedId);
     if (!selected) return;
 
+    const draft = getDraftForSelected(selected);
     const statusName = status;
-    const hasStatus = selected.statuses.includes(statusName);
+    const hasStatus = draft.statuses.includes(statusName);
 
-    selected.statuses = hasStatus
-      ? selected.statuses.filter((item) => item !== statusName)
-      : [...selected.statuses, statusName];
-
-    if (selected.type === 'hero') {
-      syncHeroProgressFromCombatants();
-    }
+    draft.statuses = hasStatus
+      ? draft.statuses.filter((item) => item !== statusName)
+      : [...draft.statuses, statusName];
 
     render();
     return;
@@ -1021,12 +1088,9 @@ app.addEventListener('click', (event) => {
     const selected = state.combatants.find((character) => character.id === state.selectedId);
     if (!selected) return;
 
+    const draft = getDraftForSelected(selected);
     const deltaValue = Number(delta) || 0;
-    selected.hp = Math.max(0, Math.min(selected.maxHp, selected.hp + deltaValue));
-
-    if (selected.type === 'hero') {
-      syncHeroProgressFromCombatants();
-    }
+    draft.hp = Math.max(0, Math.min(selected.maxHp, Number(draft.hp) + deltaValue));
 
     render();
     return;
@@ -1063,14 +1127,21 @@ app.addEventListener('change', (event) => {
   const selected = state.combatants.find((character) => character.id === state.selectedId);
   if (!selected) return;
 
+  const draft = getDraftForSelected(selected);
   const rawValue = Number(target.value);
-  selected.hp = Math.max(0, Math.min(selected.maxHp, Number.isFinite(rawValue) ? rawValue : selected.hp));
+  draft.hp = Math.max(0, Math.min(selected.maxHp, Number.isFinite(rawValue) ? rawValue : draft.hp));
+});
 
-  if (selected.type === 'hero') {
-    syncHeroProgressFromCombatants();
-  }
+app.addEventListener('input', (event) => {
+  const target = event.target.closest('[data-action="hp-input"]');
+  if (!target) return;
 
-  render();
+  const selected = state.combatants.find((character) => character.id === state.selectedId);
+  if (!selected) return;
+
+  const draft = getDraftForSelected(selected);
+  const rawValue = Number(target.value);
+  draft.hp = Number.isFinite(rawValue) ? rawValue : draft.hp;
 });
 
 app.addEventListener('keydown', (event) => {
