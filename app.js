@@ -439,6 +439,17 @@ function renderHpBar(character) {
   `;
 }
 
+function getTurnOrderLabel(characterId) {
+  const position = state.combatants.findIndex((unit) => unit.id === characterId);
+  const safePosition = position >= 0 ? position + 1 : 1;
+
+  if (safePosition === 1) return '1º';
+  if (safePosition === 2) return '2º';
+  if (safePosition === 3) return '3º';
+  if (safePosition === 4) return '4º';
+  return `${safePosition}º`;
+}
+
 function makeCharacterCard(character) {
   const isDefeated = Number(character.hp) <= 0;
   const statuses = character.statuses && character.statuses.length
@@ -448,11 +459,13 @@ function makeCharacterCard(character) {
   const heroMeta = character.type === 'hero' && character.className && character.race
     ? `<div class="combatant-subtitle">${character.race} / ${character.className}</div>`
     : '';
+  const turnLabel = getTurnOrderLabel(character.id);
 
   return `
     <article class="combatant-card ${character.type} ${isDefeated ? 'is-defeated' : ''}" data-id="${character.id}" tabindex="0" role="button" aria-label="Detalhar ${character.name}">
       <div class="combatant-header">
         <div class="combatant-name-wrap">
+          <span class="combatant-turn-marker" aria-label="Posição de iniciativa">${turnLabel}</span>
           <h3 class="combatant-name">${character.name}</h3>
           ${heroLevel}
         </div>
@@ -801,6 +814,30 @@ function renderModal() {
   `;
 }
 
+function renderConfirmationModal() {
+  if (!state.confirmation) return '';
+
+  const { title, message, confirmText, cancelText, confirmAction } = state.confirmation;
+
+  return `
+    <div class="dialog-backdrop" data-action="close-confirmation">
+      <div class="character-panel panel" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+        <div class="character-panel-header">
+          <h3 id="confirm-title" class="character-panel-title">${title}</h3>
+          <button class="close-button" data-action="close-confirmation" aria-label="Fechar confirmação">×</button>
+        </div>
+
+        <p class="outcome-message" style="margin-top: 0; margin-bottom: 18px; text-align: left;">${message}</p>
+
+        <div class="modal-actions">
+          <button class="secondary-button" data-action="close-confirmation" type="button">${cancelText || 'Cancelar'}</button>
+          <button class="primary-button" data-action="${confirmAction}" type="button">${confirmText || 'Confirmar'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function syncLobbyButtonState() {
   const startButton = document.querySelector('[data-action="start-dungeon"]');
   if (!startButton) return;
@@ -859,7 +896,7 @@ function render() {
       break;
   }
 
-  app.innerHTML = content + renderModal();
+  app.innerHTML = content + renderModal() + renderConfirmationModal();
 
   if (state.screen === 'lobby') {
     syncLobbyButtonState();
@@ -1019,6 +1056,19 @@ app.addEventListener('click', (event) => {
   }
 
   if (action === 'advance-room') {
+    state.confirmation = {
+      title: 'Sala vencida',
+      message: 'Os heróis vão vencer a sala atual sem lutar. Isso marca a sala como concluída e avança para a próxima.',
+      confirmText: 'Avançar',
+      cancelText: 'Cancelar',
+      confirmAction: 'advance-room-confirmed'
+    };
+    render();
+    return;
+  }
+
+  if (action === 'advance-room-confirmed') {
+    state.confirmation = null;
     nextRoom();
     if (state.screen === 'roomPrep') {
       goToPage('roomPrep', 'roomPrep');
@@ -1032,13 +1082,27 @@ app.addEventListener('click', (event) => {
   }
 
   if (action === 'end-dungeon') {
-    const shouldClose = window.confirm('Encerrar a dungeon atual? Isso volta para a tela inicial e apaga o andamento atual.');
-    if (!shouldClose) {
-      return;
-    }
+    state.confirmation = {
+      title: 'Encerrar dungeon',
+      message: 'Isso volta para o menu inicial e apaga o andamento atual da dungeon.',
+      confirmText: 'Encerrar',
+      cancelText: 'Cancelar',
+      confirmAction: 'end-dungeon-confirmed'
+    };
+    render();
+    return;
+  }
 
+  if (action === 'end-dungeon-confirmed') {
+    state.confirmation = null;
     resetGame();
     state.screen = 'home';
+    render();
+    return;
+  }
+
+  if (action === 'close-confirmation') {
+    state.confirmation = null;
     render();
     return;
   }
