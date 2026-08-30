@@ -1,35 +1,7 @@
-const statusMeta = {
-  Atordoado: { symbol: 'A', key: 'atordoado' },
-  Restrito: { symbol: 'R', key: 'restrito' },
-  Amedrontado: { symbol: 'M', key: 'amedrontado' },
-  Inspiração: { symbol: 'I', key: 'inspiracao' },
-};
-
 const { heroCatalog, monsterCatalog, bossCatalog, defaultMockCombatants } = window.DungeonRushData;
-
-const STORAGE_KEY = 'dungeon-rush-state-v1';
-
-const routeMap = {
-  home: 'home',
-  lobby: 'lobby',
-  heroSelect: 'heroSelect',
-  roomPrep: 'roomPrep',
-  battle: 'battle',
-  victory: 'victory',
-  defeat: 'defeat',
-};
-
-const state = {
-  screen: 'home',
-  lastRenderedScreen: null,
-  selectedId: null,
-  modalDraft: null,
-  game: null,
-  selectedHeroIds: [],
-  selectedMonsterIds: [],
-  completedRooms: [],
-  combatants: [...defaultMockCombatants].sort((a, b) => b.initiative - a.initiative || a.name.localeCompare(b.name)),
-};
+const { statusMeta, storageKey: STORAGE_KEY, routeMap, createInitialState } = window.DungeonRushConfig;
+const { maxHeroes, maxMonstersPerRoom } = window.DungeonRushConfig;
+const state = createInitialState();
 
 const app = document.querySelector('#app');
 let renderScheduled = false;
@@ -64,8 +36,8 @@ function loadPersistedState() {
     const saved = JSON.parse(raw);
     if (!saved || typeof saved !== 'object') return;
 
-    state.selectedHeroIds = Array.isArray(saved.selectedHeroIds) ? saved.selectedHeroIds : [];
-    state.selectedMonsterIds = Array.isArray(saved.selectedMonsterIds) ? saved.selectedMonsterIds : [];
+    state.selectedHeroIds = Array.isArray(saved.selectedHeroIds) ? saved.selectedHeroIds.slice(0, maxHeroes) : [];
+    state.selectedMonsterIds = Array.isArray(saved.selectedMonsterIds) ? saved.selectedMonsterIds.slice(0, maxMonstersPerRoom) : [];
     state.completedRooms = Array.isArray(saved.completedRooms) ? saved.completedRooms : [];
     state.selectedId = saved.selectedId ?? null;
     state.game = saved.game ?? null;
@@ -406,42 +378,6 @@ function resetGame() {
   state.combatants = [...defaultMockCombatants].sort((a, b) => b.initiative - a.initiative || a.name.localeCompare(b.name));
 }
 
-function getStatusClass(name) {
-  return statusMeta[name]?.key ?? 'status';
-}
-
-function getHpPercent(current, max) {
-  const safeMax = Math.max(max, 1);
-  return Math.max(0, Math.min(100, (current / safeMax) * 100));
-}
-
-function renderStatusPill(name) {
-  const meta = statusMeta[name];
-  if (!meta) return '';
-
-  return `
-    <span class="status-pill ${meta.key}" data-symbol="${meta.symbol}">${name}</span>
-  `;
-}
-
-function renderHpBar(character) {
-  const percent = getHpPercent(character.hp, character.maxHp);
-  const isLow = percent <= 35;
-
-  return `
-    <div class="hp-bar" aria-label="Vida de ${character.name}">
-      <div class="hp-fill ${isLow ? 'low' : ''}" style="width: ${percent}%"></div>
-    </div>
-    <div class="hp-text">
-      <span>${character.hp} / ${character.maxHp} PV</span>
-      <div class="combatant-meta-right">
-        <span>CA ${character.ac}</span>
-        <span>INI ${character.initiative}</span>
-      </div>
-    </div>
-  `;
-}
-
 function getTurnOrderLabel(characterId) {
   const position = state.combatants.findIndex((unit) => unit.id === characterId);
   const safePosition = position >= 0 ? position + 1 : 1;
@@ -453,111 +389,16 @@ function getTurnOrderLabel(characterId) {
   return `${safePosition}º`;
 }
 
-function makeCharacterCard(character) {
-  const isDefeated = Number(character.hp) <= 0;
-  const statuses = character.statuses && character.statuses.length
-    ? character.statuses.map(renderStatusPill).join('')
-    : '<span> </span>';
-  const heroLevel = character.type === 'hero' ? `<span class="combatant-level">Nível ${getHeroLevel(character.id)}</span>` : '<span> </span>';
-  const heroMeta = character.type === 'hero' && character.className && character.race
-    ? `<div class="combatant-subtitle">${character.race} / ${character.className}</div>`
-    : '';
-  const turnLabel = getTurnOrderLabel(character.id);
-
-  return `
-    <article class="combatant-card ${character.type} ${isDefeated ? 'is-defeated' : ''}" data-id="${character.id}" tabindex="0" role="button" aria-label="Detalhar ${character.name}">
-      <div class="combatant-header">
-          <span class="combatant-turn-marker" aria-label="Posição de iniciativa">${turnLabel}</span>
-          <h3 class="combatant-name">${character.name}</h3>
-          ${heroLevel}
-      </div>
-      ${heroMeta}
-      ${renderHpBar(character)}
-      <div class="status-list">
-        ${statuses}
-      </div>
-    </article>
-  `;
-}
-
 function renderHomeScreen() {
-  return `
-    <main class="app-shell">
-      <section class="screen home-screen">
-        <div class="title-block panel">
-          <h1 class="logo">Dungeon Rush</h1>
-          <p class="subtitle">Companion</p>
-          <div class="home-actions">
-            <button class="primary-button" data-action="new-game">Novo Jogo</button>
-            <button class="secondary-button" data-action="open-manual">Manual</button>
-          </div>
-        </div>
-      </section>
-    </main>
-  `;
+  return DungeonRushViews.renderHome();
 }
 
 function renderLobbyScreen() {
-  const selectedHeroes = getSelectedHeroes();
-  const hasDungeonName = (getDungeonName() || '').trim().length > 0;
-
-  return `
-    <main class="app-shell">
-      <section class="screen lobby-screen panel">
-        <header class="page-header">
-          <div>
-            <p class="eyebrow">Dungeon Rush</p>
-            <h2 class="page-title">Novo Jogo</h2>
-          </div>
-          <div class="header-actions">
-            <button class="secondary-button compact-header-button" data-action="cancel-new-game" type="button">Cancelar</button>
-          </div>
-        </header>
-
-        <div class="lobby-fieldset">
-          <label class="field-label" for="dungeon-name">Nome da dungeon</label>
-          <input
-            id="dungeon-name"
-            class="dungeon-name-input"
-            type="text"
-            data-role="dungeon-name"
-            value="${getDungeonName()}"
-            maxlength="40"
-            placeholder="Nome da dungeon"
-          />
-        </div>
-
-        <div class="lobby-summary lobby-hero-summary">
-          <div class="summary-header">
-            <span>Heróis</span>
-          </div>
-          <div class="roster-list compact-roster">
-            ${selectedHeroes.length
-              ? selectedHeroes.map((hero) => `
-                <div class="roster-entry hero-entry">
-                  <span>${hero.name}</span>
-                  <small>${hero.className} </small>
-                </div>
-              `).join('')
-              : '<div class="roster-empty">Nenhum herói selecionado</div>'}
-          </div>
-        </div>
-
-        <div class="action-stack">
-          <button class="primary-button" data-action="open-hero-select">Selecionar Heróis</button>
-          <button class="hero-start-button" data-action="start-dungeon" ${selectedHeroes.length === 0 || !hasDungeonName ? 'disabled' : ''}>
-            Iniciar Dungeon
-          </button>
-        </div>
-      </section>
-    </main>
-  `;
+  return DungeonRushViews.renderLobby({ selectedHeroes: getSelectedHeroes(), dungeonName: getDungeonName() });
 }
 
 function renderHeroSelectionScreen() {
-  const selected = new Set(state.selectedHeroIds);
-
-  return `
+  return DungeonRushViews.renderHeroSelection({ heroes: heroCatalog, selectedIds: state.selectedHeroIds, maxHeroes }); /*
     <main class="app-shell">
       <section class="screen selection-screen panel">
         <header class="page-header">
@@ -598,7 +439,7 @@ function renderHeroSelectionScreen() {
         </div>
       </section>
     </main>
-  `;
+  `; */
 }
 
 function renderRoomPrepScreen() {
@@ -610,7 +451,7 @@ function renderRoomPrepScreen() {
   const threatTotal = isBossRoom ? getSelectedBossThreat() : getSelectedMonsterThreat();
   const enemyCatalog = isBossRoom ? bossCatalog : monsterCatalog;
 
-  return `
+  return DungeonRushViews.renderRoomPrep({ heroes, enemies: enemyCatalog, selectedIds: state.selectedMonsterIds, roomNumber, isBossRoom, threatTotal, renderDungeonProgress, maxMonsters: maxMonstersPerRoom }); /*
     <main class="app-shell">
       <section class="screen room-screen panel">
         <header class="page-header room-header-top">
@@ -674,63 +515,22 @@ function renderRoomPrepScreen() {
         </div>
       </section>
     </main>
-  `;
+  `; */
 }
 
 function renderBattleScreen() {
-  const orderedList = state.combatants
-    .map(makeCharacterCard)
-    .join('');
-  const battleTitle = getDungeonName() || 'Dungeon';
-  const roomNumber = state.game?.currentRoom || 1;
-  const isFinalBossRoom = roomNumber >= 10;
-  const livingEnemies = state.combatants.filter((unit) => unit.type !== 'hero' && Number(unit.hp) > 0);
-  const roomCleared = !livingEnemies.length && !isFinalBossRoom;
-  const canAdvanceRoom = livingEnemies.length === 0 && !isFinalBossRoom;
-
-  return `
-    <main class="app-shell">
-      <section class="screen battle-screen">
-        <header class="room-header panel">
-          <div>
-            <h2 class="room-title">${battleTitle}</h2>
-          </div>
-          <div class="room-meta">Iniciativa</div>
-        </header>
-
-        ${renderDungeonProgress()}
-
-        ${roomCleared ? '<div class="battle-status success">Sala finalizada</div>' : ''}
-
-        <div class="combat-list">${orderedList}</div>
-
-        <div class="action-stack compact-actions battle-actions">
-          <button class="danger-button" data-action="end-dungeon">Encerrar Dungeon</button>
-          ${!isFinalBossRoom ? `<button class="primary-button" data-action="next-room" ${canAdvanceRoom ? '' : 'disabled'}>Encerrar Sala</button>` : ''}
-        </div>
-      </section>
-    </main>
-  `;
+  return DungeonRushViews.renderBattle({
+    state,
+    getDungeonName,
+    renderDungeonProgress,
+    getTurnOrderLabel,
+    getHeroLevel,
+    components: DungeonRushComponents,
+  });
 }
 
 function renderOutcomeScreen(result) {
-  const isVictory = result === 'victory';
-  const title = isVictory ? 'Vitória' : 'Derrota';
-  const message = isVictory
-    ? 'O boss foi derrotado. A dungeon foi concluída.'
-    : 'Todos os heróis estão mortos.';
-
-  return `
-    <main class="app-shell">
-      <section class="screen outcome-screen panel">
-        <h1 class="outcome-title">${title}</h1>
-        <p class="outcome-message">${message}</p>
-        <div class="action-stack compact-actions">
-          <button class="primary-button" data-action="back-to-home">Voltar ao menu</button>
-        </div>
-      </section>
-    </main>
-  `;
+  return DungeonRushViews.renderOutcome(result);
 }
 
 function getDraftForSelected(selected) {
@@ -982,6 +782,7 @@ app.addEventListener('click', (event) => {
     if (state.selectedHeroIds.includes(id)) {
       state.selectedHeroIds = state.selectedHeroIds.filter((heroId) => heroId !== id);
     } else {
+      if (state.selectedHeroIds.length >= maxHeroes) return;
       state.selectedHeroIds = [...state.selectedHeroIds, id];
     }
     render();
@@ -1040,6 +841,7 @@ app.addEventListener('click', (event) => {
     if (state.selectedMonsterIds.includes(id)) {
       state.selectedMonsterIds = state.selectedMonsterIds.filter((monsterId) => monsterId !== id);
     } else {
+      if (state.selectedMonsterIds.length >= maxMonstersPerRoom) return;
       state.selectedMonsterIds = [...state.selectedMonsterIds, id];
     }
     render();

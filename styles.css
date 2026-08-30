@@ -411,6 +411,18 @@ input[type='number']::-webkit-inner-spin-button {
   background-image: linear-gradient(180deg, rgba(51, 39, 30, 0.96), rgba(23, 18, 15, 0.98));
 }
 
+.select-card.is-disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  filter: grayscale(0.55);
+}
+
+.select-card.is-disabled:hover {
+  transform: none;
+  border-color: rgba(213, 178, 107, 0.18);
+  box-shadow: none;
+}
+
 .hero-card {
   background: linear-gradient(180deg, rgba(70, 48, 21, 0.98), rgba(30, 18, 10, 0.99));
   border-left: 4px solid var(--hero);
@@ -460,8 +472,12 @@ input[type='number']::-webkit-inner-spin-button {
   margin: 0;
   font-family: "Cinzel", serif;
   font-size: 1.12rem;
+  line-height: 1.08;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .class-line {
@@ -814,6 +830,7 @@ input[type='number']::-webkit-inner-spin-button {
 
 .combatant-turn-marker {
   display: inline-flex;
+  width: 20%;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
@@ -854,7 +871,6 @@ input[type='number']::-webkit-inner-spin-button {
   align-items: center;
   width: 100%;
   justify-content: space-between;
-  margin-bottom: 12px;
 }
 
 .combatant-level {
@@ -887,6 +903,11 @@ input[type='number']::-webkit-inner-spin-button {
 
 .combatant-name {
   margin: 0;
+  width: 60%;
+  text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   font-family: "Cinzel", serif;
   font-size: 1rem;
   letter-spacing: 0.08em;
@@ -894,7 +915,8 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .combatant-subtitle {
-  margin: -2px 0 8px;
+  margin: 0;
+  text-align: center;
   color: var(--text-soft);
   font-size: 0.62rem;
   letter-spacing: 0.12em;
@@ -910,6 +932,7 @@ input[type='number']::-webkit-inner-spin-button {
 
 .hp-bar {
   position: relative;
+  margin-top: 12px;
   height: 14px;
   border-radius: 999px;
   background: rgba(34, 29, 25, 0.9);
