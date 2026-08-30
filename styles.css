@@ -348,7 +348,6 @@ input[type='number']::-webkit-inner-spin-button {
   font-size: 0.62rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--text-muted);
 }
 
 .lobby-summary strong {
@@ -521,6 +520,7 @@ input[type='number']::-webkit-inner-spin-button {
 .roster-entry span {
   font-family: "Cinzel", serif;
   font-size: 0.94rem;
+  color: var(--text-soft);
 }
 
 .roster-entry small {
@@ -804,6 +804,14 @@ input[type='number']::-webkit-inner-spin-button {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 0 18px rgba(0, 0, 0, 0.45);
 }
 
+@media (max-width: 640px) {
+  .combatant-card.hero,
+  .combatant-card.monster,
+  .combatant-card.boss {
+    width: calc(100% - 2rem);
+  }
+}
+
 .combatant-turn-marker {
   display: inline-flex;
   align-items: center;
@@ -844,17 +852,9 @@ input[type='number']::-webkit-inner-spin-button {
 .combatant-header {
   display: flex;
   align-items: center;
+  width: 100%;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.combatant-name-wrap {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  margin-bottom: 12px;
 }
 
 .combatant-level {
@@ -935,8 +935,9 @@ input[type='number']::-webkit-inner-spin-button {
   justify-content: space-between;
   align-items: center;
   margin-top: 8px;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-soft);
 }
@@ -957,8 +958,7 @@ input[type='number']::-webkit-inner-spin-button {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 10px;
-  min-height: 22px;
+  margin-top: 8px;
 }
 
 .status-pill {

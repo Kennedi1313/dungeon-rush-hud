@@ -433,8 +433,11 @@ function renderHpBar(character) {
       <div class="hp-fill ${isLow ? 'low' : ''}" style="width: ${percent}%"></div>
     </div>
     <div class="hp-text">
-      <span>${character.hp} / ${character.maxHp}</span>
-      <span>PV</span>
+      <span>${character.hp} / ${character.maxHp} PV</span>
+      <div class="combatant-meta-right">
+        <span>CA ${character.ac}</span>
+        <span>INI ${character.initiative}</span>
+      </div>
     </div>
   `;
 }
@@ -454,8 +457,8 @@ function makeCharacterCard(character) {
   const isDefeated = Number(character.hp) <= 0;
   const statuses = character.statuses && character.statuses.length
     ? character.statuses.map(renderStatusPill).join('')
-    : '<span class="status-pill" data-symbol="-">Nenhum</span>';
-  const heroLevel = character.type === 'hero' ? `<span class="combatant-level">Nível ${getHeroLevel(character.id)}</span>` : '';
+    : '<span> </span>';
+  const heroLevel = character.type === 'hero' ? `<span class="combatant-level">Nível ${getHeroLevel(character.id)}</span>` : '<span> </span>';
   const heroMeta = character.type === 'hero' && character.className && character.race
     ? `<div class="combatant-subtitle">${character.race} / ${character.className}</div>`
     : '';
@@ -464,19 +467,15 @@ function makeCharacterCard(character) {
   return `
     <article class="combatant-card ${character.type} ${isDefeated ? 'is-defeated' : ''}" data-id="${character.id}" tabindex="0" role="button" aria-label="Detalhar ${character.name}">
       <div class="combatant-header">
-        <div class="combatant-name-wrap">
           <span class="combatant-turn-marker" aria-label="Posição de iniciativa">${turnLabel}</span>
           <h3 class="combatant-name">${character.name}</h3>
           ${heroLevel}
-        </div>
-        <div class="combatant-meta-right">
-          <span>CA ${character.ac}</span>
-          <span>INI ${character.initiative}</span>
-        </div>
       </div>
       ${heroMeta}
       ${renderHpBar(character)}
-      <div class="status-list">${statuses}</div>
+      <div class="status-list">
+        ${statuses}
+      </div>
     </article>
   `;
 }
@@ -537,7 +536,7 @@ function renderLobbyScreen() {
               ? selectedHeroes.map((hero) => `
                 <div class="roster-entry hero-entry">
                   <span>${hero.name}</span>
-                  <small>${hero.className} · Nível ${getHeroLevel(hero.id)}</small>
+                  <small>${hero.className} </small>
                 </div>
               `).join('')
               : '<div class="roster-empty">Nenhum herói selecionado</div>'}
@@ -628,7 +627,7 @@ function renderRoomPrepScreen() {
             ${heroes.map((hero) => `
               <div class="roster-entry hero-entry">
                 <span>${hero.name}</span>
-                <small>${hero.className} · Nível ${getHeroLevel(hero.id)} · PV ${hero.hp}/${hero.maxHp}</small>
+                <small>${hero.className} · PV ${hero.hp}/${hero.maxHp}</small>
               </div>
             `).join('') || '<div class="roster-empty">Sem heróis selecionados</div>'}
           </div>
