@@ -98,13 +98,14 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 #app {
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .app-shell {
-  width: min(100%, 1100px);
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
-  padding: 18px 14px 48px;
+  padding: 18px 12px;
 }
 
 .app-shell:has(.outcome-screen) {
@@ -112,8 +113,6 @@ input[type='number']::-webkit-inner-spin-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 18px;
-  padding-bottom: 18px;
 }
 
 .screen {
@@ -128,7 +127,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .home-screen {
-  min-height: 100vh;
+  height: 100%;
   display: grid;
   place-items: center;
 }
@@ -488,6 +487,10 @@ input[type='number']::-webkit-inner-spin-button {
   text-transform: uppercase;
 }
 
+.selection-screen .class-line {
+  font-size: 0.8rem;
+}
+
 .mini-stats {
   display: flex;
   flex-wrap: wrap;
@@ -497,6 +500,11 @@ input[type='number']::-webkit-inner-spin-button {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-soft);
+}
+
+.selection-screen .mini-stats,
+.room-screen .mini-stats {
+  font-size: 0.8rem;
 }
 
 .compact-actions {
@@ -1006,26 +1014,12 @@ input[type='number']::-webkit-inner-spin-button {
   gap: 6px;
   padding: 4px 8px;
   border-radius: 999px;
-  font-size: 0.54rem;
+  font-size: 0.65rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   border: 1px solid rgba(213, 178, 107, 0.3);
   background: rgba(122, 95, 51, 0.12);
   color: var(--gold-soft);
-}
-
-.status-pill::before {
-  content: attr(data-symbol);
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.18);
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: 0.6rem;
 }
 
 .status-pill.atordoado { border-color: rgba(143, 93, 68, 0.55); color: #f3d6ba; background: rgba(143, 93, 68, 0.12); }
@@ -1172,10 +1166,6 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 @media (min-width: 720px) {
-  .app-shell {
-    padding-top: 24px;
-  }
-
   .lobby-screen,
   .selection-screen,
   .room-screen {

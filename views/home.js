@@ -6,7 +6,7 @@ window.DungeonRushViews.renderHome = function renderHome() {
       <section class="screen home-screen">
         <div class="title-block panel">
           <h1 class="logo">Dungeon Rush</h1>
-          <p class="subtitle">Companion</p>
+          <p class="subtitle">HUD</p>
           <div class="home-actions">
             <button class="primary-button" data-action="new-game">Novo Jogo</button>
             <button class="secondary-button" data-action="open-manual">Manual</button>

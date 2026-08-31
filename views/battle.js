@@ -18,10 +18,6 @@ window.DungeonRushViews.renderBattle = function renderBattle({ state, getDungeon
   return `
     <main class="app-shell">
       <section class="screen battle-screen">
-        <header class="room-header panel">
-          <div><h2 class="room-title">${battleTitle}</h2></div>
-          <div class="room-meta">Iniciativa</div>
-        </header>
         ${renderDungeonProgress()}
         ${roomCleared ? '<div class="battle-status success">Sala finalizada</div>' : ''}
         <div class="combat-list">${orderedList}</div>

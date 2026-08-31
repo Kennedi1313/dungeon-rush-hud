@@ -394,7 +394,7 @@ function renderHomeScreen() {
 }
 
 function renderLobbyScreen() {
-  return DungeonRushViews.renderLobby({ selectedHeroes: getSelectedHeroes(), dungeonName: getDungeonName() });
+  return DungeonRushViews.renderLobby({ selectedHeroes: getSelectedHeroes() });
 }
 
 function renderHeroSelectionScreen() {
@@ -641,9 +641,8 @@ function syncLobbyButtonState() {
   const startButton = document.querySelector('[data-action="start-dungeon"]');
   if (!startButton) return;
 
-  const hasDungeonName = (getDungeonName() || '').trim().length > 0;
   const hasHeroes = state.selectedHeroIds.length > 0;
-  startButton.disabled = !hasDungeonName || !hasHeroes;
+  startButton.disabled = !hasHeroes;
 }
 
 function resetScrollToTop() {
@@ -806,7 +805,7 @@ app.addEventListener('click', (event) => {
 
   if (action === 'start-dungeon') {
     const dungeonName = (state.game?.dungeonName ?? getDungeonName()).trim();
-    if (!dungeonName || !state.selectedHeroIds.length) {
+    if (!state.selectedHeroIds.length) {
       return;
     }
     state.game = state.game || {
