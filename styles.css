@@ -828,9 +828,12 @@ input[type='number']::-webkit-inner-spin-button {
   }
 }
 
+.combatant-turn-div {
+    width: 20%;
+}
+
 .combatant-turn-marker {
   display: inline-flex;
-  width: 20%;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
@@ -880,6 +883,19 @@ input[type='number']::-webkit-inner-spin-button {
   font-size: 0.8rem;
   letter-spacing: 0.06em;
   text-transform: none;
+  text-align: center;
+  justify-content: end;
+  width: 20%;
+}
+
+.combatant-level-placeholder {
+  width: auto;
+}
+
+@media (min-width: 720px) {
+  .combatant-level-placeholder {
+    width: 20%;
+  }
 }
 
 .combatant-level::before {

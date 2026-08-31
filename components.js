@@ -31,7 +31,7 @@ window.DungeonRushComponents = {
       : '<span> </span>';
     const level = character.type === 'hero'
       ? `<span class="combatant-level">Nível ${heroLevel}</span>`
-      : '<span> </span>';
+      : '<span class="combatant-level-placeholder"> </span>';
     const heroMeta = character.type === 'hero' && character.className && character.race
       ? `<div class="combatant-subtitle">${character.race} / ${character.className}</div>`
       : '';
@@ -39,7 +39,9 @@ window.DungeonRushComponents = {
     return `
       <article class="combatant-card ${character.type} ${isDefeated ? 'is-defeated' : ''}" data-id="${character.id}" tabindex="0" role="button" aria-label="Detalhar ${character.name}">
         <div class="combatant-header">
-          <span class="combatant-turn-marker" aria-label="Posição de iniciativa">${turnLabel}</span>
+          <div class="combatant-turn-div">
+            <span class="combatant-turn-marker" aria-label="Posição de iniciativa">${turnLabel}</span>
+          </div>
           <h3 class="combatant-name">${character.name}</h3>
           ${level}
         </div>
