@@ -41,7 +41,7 @@ function loadPersistedState() {
     state.completedRooms = Array.isArray(saved.completedRooms) ? saved.completedRooms : [];
     state.selectedId = saved.selectedId ?? null;
     state.game = saved.game ?? null;
-    state.combatants = Array.isArray(saved.combatants) ? saved.combatants : [...defaultMockCombatants].sort((a, b) => b.initiative - a.initiative || a.name.localeCompare(b.name));
+    state.combatants = Array.isArray(saved.combatants) ? saved.combatants.map((unit) => ({ ...unit, baseAc: unit.baseAc ?? unit.ac })) : [...defaultMockCombatants].map((unit) => ({ ...unit, baseAc: unit.ac })).sort((a, b) => b.initiative - a.initiative || a.name.localeCompare(b.name));
     state.screen = routeMap[document.body.dataset.page || 'home'] || state.screen;
   } catch (error) {
     console.warn('Estado persistido inválido:', error);
@@ -314,6 +314,7 @@ function startRoomCombat() {
     hp: unit.hp,
     maxHp: unit.maxHp,
     ac: unit.ac,
+    baseAc: unit.ac,
     initiative: unit.initiative,
     statuses: [],
   }));
@@ -375,7 +376,7 @@ function resetGame() {
   state.selectedMonsterIds = [];
   state.selectedId = null;
   state.completedRooms = [];
-  state.combatants = [...defaultMockCombatants].sort((a, b) => b.initiative - a.initiative || a.name.localeCompare(b.name));
+  state.combatants = [...defaultMockCombatants].map((unit) => ({ ...unit, baseAc: unit.baseAc ?? unit.ac })).sort((a, b) => b.initiative - a.initiative || a.name.localeCompare(b.name));
 }
 
 function getTurnOrderLabel(characterId) {
@@ -540,6 +541,7 @@ function getDraftForSelected(selected) {
     state.modalDraft = {
       id: selected.id,
       hp: selected.hp,
+      ac: selected.ac,
       statuses: [...selected.statuses],
     };
   }
@@ -577,8 +579,8 @@ function renderModal() {
             <span class="detail-value">${draft.hp} / ${selected.maxHp}</span>
           </div>
           <div class="detail-cell">
-            <span class="detail-label">CA</span>
-            <span class="detail-value">${selected.ac}</span>
+            <span class="detail-label">CA original</span>
+            <span class="detail-value">${selected.baseAc ?? selected.ac}</span>
           </div>
           <div class="detail-cell">
             <span class="detail-label">INI</span>
@@ -596,6 +598,15 @@ function renderModal() {
             <button class="hp-adjust" data-action="modify-hp" data-delta="-1" type="button">−</button>
             <input class="hp-input" data-action="hp-input" type="number" min="0" max="${selected.maxHp}" value="${draft.hp}" />
             <button class="hp-adjust" data-action="modify-hp" data-delta="1" type="button">+</button>
+          </div>
+        </div>
+
+        <div class="hp-editor ac-editor">
+          <span class="detail-label">Editar CA</span>
+          <div class="hp-editor-row">
+            <button class="hp-adjust" data-action="modify-ac" data-delta="-1" type="button">−</button>
+            <input class="hp-input" data-action="ac-input" type="number" value="${draft.ac}" />
+            <button class="hp-adjust" data-action="modify-ac" data-delta="1" type="button">+</button>
           </div>
         </div>
 
@@ -790,7 +801,7 @@ app.addEventListener('click', (event) => {
     if (!lightbox || !image) return;
     const side = action === 'next-card-side' ? 'back' : 'front';
     lightbox.dataset.cardSide = side;
-    image.style.transform = side === 'back' ? 'translateX(-50%)' : 'translateX(0)';
+    image.style.transform = side === 'back' ? 'translateX(-50.1%)' : 'translateX(0)';
     if (label) label.textContent = side === 'back' ? 'Verso' : 'Frente';
     return;
   }
@@ -961,6 +972,7 @@ app.addEventListener('click', (event) => {
 
     const draft = getDraftForSelected(selected);
     selected.hp = Math.max(0, Math.min(selected.maxHp, Number(draft.hp) || 0));
+    selected.ac = Math.max(0, Number(draft.ac) || 0);
     selected.statuses = [...draft.statuses];
 
     if (selected.type === 'hero') {
@@ -1001,6 +1013,15 @@ app.addEventListener('click', (event) => {
     return;
   }
 
+  if (action === 'modify-ac') {
+    const selected = state.combatants.find((character) => character.id === state.selectedId);
+    if (!selected) return;
+    const draft = getDraftForSelected(selected);
+    draft.ac = Math.max(0, Number(draft.ac) + (Number(delta) || 0));
+    render();
+    return;
+  }
+
   const combatantCard = actionTarget.closest('.combatant-card');
   if (combatantCard) {
     state.selectedId = combatantCard.dataset.id;
@@ -1023,6 +1044,16 @@ app.addEventListener('input', (event) => {
 
   state.game.dungeonName = target.value;
   syncLobbyButtonState();
+});
+
+app.addEventListener('input', (event) => {
+  const target = event.target.closest('[data-action="ac-input"]');
+  if (!target) return;
+  const selected = state.combatants.find((character) => character.id === state.selectedId);
+  if (!selected) return;
+  const draft = getDraftForSelected(selected);
+  const value = Number(target.value);
+  if (Number.isFinite(value)) draft.ac = value;
 });
 
 app.addEventListener('change', (event) => {

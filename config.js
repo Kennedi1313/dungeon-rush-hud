@@ -33,7 +33,7 @@ window.DungeonRushConfig = {
       selectedHeroIds: [],
       selectedMonsterIds: [],
       completedRooms: [],
-      combatants: [...initialCombatants].sort((a, b) => b.initiative - a.initiative || a.name.localeCompare(b.name)),
+      combatants: [...initialCombatants].map((unit) => ({ ...unit, baseAc: unit.ac })).sort((a, b) => b.initiative - a.initiative || a.name.localeCompare(b.name)),
     };
   },
 };
