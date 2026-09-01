@@ -9,6 +9,7 @@ window.DungeonRushViews.renderHome = function renderHome() {
           <p class="subtitle">HUD</p>
           <div class="home-actions">
             <button class="primary-button" data-action="new-game">Novo Jogo</button>
+            <button class="secondary-button" data-action="open-cards">Cartas</button>
             <button class="secondary-button" data-action="open-manual">Manual</button>
           </div>
         </div>

@@ -20,6 +20,7 @@ window.DungeonRushConfig = {
     battle: 'battle',
     victory: 'victory',
     defeat: 'defeat',
+    cards: 'cards',
   },
   createInitialState() {
     return {

@@ -689,6 +689,9 @@ function render() {
     case 'defeat':
       content = renderOutcomeScreen('defeat');
       break;
+    case 'cards':
+      content = DungeonRushViews.renderCards();
+      break;
     default:
       content = renderHomeScreen();
       break;
@@ -757,6 +760,44 @@ app.addEventListener('click', (event) => {
 
   if (action === 'open-manual') {
     window.location.href = './manual.html';
+    return;
+  }
+
+  if (action === 'open-cards') {
+    goToPage('cards', 'cards');
+    return;
+  }
+
+  if (action === 'open-card') {
+    const lightbox = document.querySelector('[data-role="card-lightbox"]');
+    const image = lightbox?.querySelector('[data-role="lightbox-image"]');
+    if (!lightbox || !image) return;
+    const file = actionTarget.dataset.cardFile;
+    const name = actionTarget.dataset.cardName;
+    image.src = `./assets/${encodeURIComponent(file)}`;
+    image.alt = name;
+    image.style.transform = 'translateX(0)';
+    lightbox.dataset.cardSide = 'front';
+    lightbox.querySelector('[data-role="card-side-label"]').textContent = 'Frente';
+    lightbox.hidden = false;
+    return;
+  }
+
+  if (action === 'previous-card-side' || action === 'next-card-side') {
+    const lightbox = document.querySelector('[data-role="card-lightbox"]');
+    const image = lightbox?.querySelector('[data-role="lightbox-image"]');
+    const label = lightbox?.querySelector('[data-role="card-side-label"]');
+    if (!lightbox || !image) return;
+    const side = action === 'next-card-side' ? 'back' : 'front';
+    lightbox.dataset.cardSide = side;
+    image.style.transform = side === 'back' ? 'translateX(-50%)' : 'translateX(0)';
+    if (label) label.textContent = side === 'back' ? 'Verso' : 'Frente';
+    return;
+  }
+
+  if (action === 'close-card') {
+    const lightbox = document.querySelector('[data-role="card-lightbox"]');
+    if (lightbox) lightbox.hidden = true;
     return;
   }
 
@@ -1016,6 +1057,7 @@ app.addEventListener('keydown', (event) => {
     render();
   }
 });
+
 
 hydrateRoute();
 render();
