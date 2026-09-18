@@ -26,5 +26,9 @@
     "prettier": "latest",
     "typescript": "latest",
     "vitest": "latest"
+  },
+  "optionalDependencies": {
+    "@emnapi/core": "1.11.3",
+    "@emnapi/runtime": "1.11.3"
   }
 }
