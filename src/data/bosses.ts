@@ -1,0 +1,48 @@
+import type { Enemy } from "../domain/types";
+
+export const bossCatalog: Enemy[] = [
+  {
+    id: "illithid",
+    name: "Illithid",
+    type: "boss",
+    hp: 65,
+    maxHp: 65,
+    ac: 16,
+    initiative: 5,
+    bonus: "+3",
+    threat: 20,
+  },
+  {
+    id: "beholder",
+    name: "Beholder",
+    type: "boss",
+    hp: 60,
+    maxHp: 60,
+    ac: 14,
+    initiative: 1,
+    bonus: "+2",
+    threat: 18,
+  },
+  {
+    id: "nightwalker",
+    name: "Nightwalker",
+    type: "boss",
+    hp: 60,
+    maxHp: 60,
+    ac: 14,
+    initiative: 3,
+    bonus: "+2",
+    threat: 18,
+  },
+  {
+    id: "balor",
+    name: "Balor",
+    type: "boss",
+    hp: 70,
+    maxHp: 70,
+    ac: 15,
+    initiative: 4,
+    bonus: "+3",
+    threat: 22,
+  },
+];
