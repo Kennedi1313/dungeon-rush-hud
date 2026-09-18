@@ -4,11 +4,11 @@ Um mini projeto que mistura hobby e estudo: um HUD web para acompanhar uma parti
 
 A ideia é transformar em interface digital parte das informações que normalmente ficam espalhadas pela mesa — heróis, monstros, salas, cartas, pontos de vida e estados de combate — sem tentar substituir o jogo físico.
 
-Este repositório também funciona como um projeto de portfólio. O foco não é criar um produto comercial completo neste momento, mas demonstrar como estruturo uma aplicação React/Next.js com domínio próprio, fluxo de telas, estado previsível e componentes reutilizáveis.
+Este repositório também funciona como um projeto de portfólio: uma aplicação React/Next.js com domínio próprio, fluxo de telas, estado previsível e componentes reutilizáveis.
 
-## O que existe hoje
+## Experiência atual
 
-O protótipo reproduz o fluxo principal do HUD:
+O HUD organiza o fluxo principal de uma partida:
 
 ```text
 Home → Lobby → Seleção de heróis → Preparação da sala → Batalha
@@ -27,9 +27,7 @@ O fluxo inclui:
 - manual do jogo;
 - persistência do estado local no navegador.
 
-## Intenção técnica
-
-O projeto foi migrado de uma implementação baseada em arquivos HTML e JavaScript para uma aplicação Next.js com App Router. A migração preserva o comportamento e o visual do HUD original, enquanto organiza o código em camadas mais fáceis de evoluir.
+## Arquitetura
 
 Algumas decisões importantes:
 
@@ -40,9 +38,9 @@ Algumas decisões importantes:
 - **estrutura orientada a features** para agrupar componentes por fluxo do produto;
 - **componentes compartilhados** para elementos de interface recorrentes, como botões e cabeçalhos;
 - **persistência validada** no `localStorage`, evitando confiar diretamente em dados serializados;
-- **exportação estática** para manter o protótipo publicável no GitHub Pages.
+- **exportação estática** para publicar a aplicação no GitHub Pages.
 
-O estado atual é deliberadamente local. A persistência no navegador é suficiente para o escopo deste protótipo e mantém o projeto simples de executar e publicar.
+O estado da partida é local e persistido no navegador. Essa escolha mantém a experiência rápida, simples de executar e adequada ao escopo atual do HUD.
 
 ## Stack
 
@@ -90,4 +88,4 @@ npm run build
 
 O projeto usa `output: "export"` e gera uma versão estática na pasta `out/`. O workflow em `.github/workflows/deploy-pages.yml` publica automaticamente essa versão no GitHub Pages.
 
-O deploy estático é suficiente para o HUD local e sua persistência no navegador. O projeto foi mantido sem backend porque esse não é o objetivo desta versão.
+O deploy estático é suficiente para a experiência atual e para sua persistência no navegador. A aplicação não depende de backend para funcionar.
