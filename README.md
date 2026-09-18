@@ -2,6 +2,10 @@
 
 Um mini projeto que mistura hobby e estudo: um HUD web para acompanhar uma partida do meu jogo autoral, Dungeon Rush, desenvolvido como uma experiência de aventura inspirada em RPGs de mesa e em Dungeons & Dragons.
 
+## Demo
+
+Confira a aplicação publicada no [GitHub Pages](https://kennedi1313.github.io/dungeon-rush-hud/).
+
 A ideia é transformar em interface digital parte das informações que normalmente ficam espalhadas pela mesa — heróis, monstros, salas, cartas, pontos de vida e estados de combate — sem tentar substituir o jogo físico.
 
 Este repositório também funciona como um projeto de portfólio: uma aplicação React/Next.js com domínio próprio, fluxo de telas, estado previsível e componentes reutilizáveis.
