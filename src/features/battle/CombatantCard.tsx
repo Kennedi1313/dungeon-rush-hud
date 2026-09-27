@@ -3,10 +3,11 @@ import type { Combatant } from "../../domain/types";
 type Props = {
   combatant: Combatant;
   position: number;
+  level: number;
   onSelect: (id: string) => void;
 };
 
-export function CombatantCard({ combatant, position, onSelect }: Props) {
+export function CombatantCard({ combatant, position, level, onSelect }: Props) {
   const hpPercent = Math.max(0, Math.min(100, (combatant.hp / combatant.maxHp) * 100));
   const acClass =
     combatant.ac > combatant.baseAc
@@ -28,7 +29,7 @@ export function CombatantCard({ combatant, position, onSelect }: Props) {
         </div>
         <h3 className="combatant-name">{combatant.name}</h3>
         {combatant.type === "hero" ? (
-          <span className="combatant-level">Nível 1</span>
+          <span className="combatant-level">Nível {level}</span>
         ) : (
           <span className="combatant-level-placeholder" />
         )}
@@ -52,6 +53,7 @@ export function CombatantCard({ combatant, position, onSelect }: Props) {
         <div className="combatant-meta-right">
           <span className={acClass}>CA {combatant.ac}</span>
           <span>INI {combatant.initiative}</span>
+          {combatant.damage && <span>DANO {combatant.damage}</span>}
         </div>
       </div>
       <div className="status-list">

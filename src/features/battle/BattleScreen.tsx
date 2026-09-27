@@ -41,13 +41,18 @@ export function BattleScreen({
   return (
     <main className="app-shell">
       <section className="screen battle-screen">
-        <DungeonProgress />
+        <DungeonProgress
+          currentRoom={state.game?.currentRoom ?? 1}
+          completedRooms={state.game?.completedRooms ?? []}
+          roomOutcomes={state.game?.roomOutcomes ?? {}}
+        />
         {roomCleared && <div className="battle-status success">Sala finalizada</div>}
         <div className="combat-list">
           {state.combatants.map((combatant, index) => (
             <CombatantCard
               combatant={combatant}
               position={index + 1}
+              level={state.game?.currentRoom && state.game.currentRoom >= 6 ? 2 : 1}
               key={combatant.id}
               onSelect={onSelect}
             />
@@ -84,14 +89,33 @@ export function BattleScreen({
   );
 }
 
-function DungeonProgress() {
+function DungeonProgress({
+  currentRoom,
+  completedRooms,
+  roomOutcomes,
+}: {
+  currentRoom: number;
+  completedRooms: number[];
+  roomOutcomes: Record<number, "battle" | "treasure">;
+}) {
   return (
     <div className="dungeon-progress panel">
       <div className="dungeon-progress-head">Mapa da dungeon</div>
       <div className="dungeon-progress-track">
         {Array.from({ length: 10 }, (_, index) => (
-          <div className={`dungeon-node ${index === 0 ? "is-current" : ""}`} key={index}>
-            {index + 1}
+          <div
+            className={`dungeon-node ${completedRooms.includes(index + 1) ? "is-complete" : ""} ${
+              roomOutcomes[index + 1] ? `is-${roomOutcomes[index + 1]}` : ""
+            } ${index + 1 === currentRoom ? "is-current" : ""}`}
+            key={index}
+          >
+            {completedRooms.includes(index + 1) ? (
+              <span className="room-cleared-glyph" aria-label="Sala concluída">
+                ◆
+              </span>
+            ) : (
+              index + 1
+            )}
           </div>
         ))}
       </div>

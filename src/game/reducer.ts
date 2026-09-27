@@ -112,6 +112,7 @@ export function gameReducer(state: AppState, action: GameAction): AppState {
           ac: unit.ac,
           baseAc: unit.ac,
           initiative: unit.initiative,
+          ...(unit.type !== "hero" && unit.damage ? { damage: unit.damage } : {}),
           statuses: [],
           ...(unit.type === "hero" ? { className: unit.className, race: unit.race } : {}),
         }));

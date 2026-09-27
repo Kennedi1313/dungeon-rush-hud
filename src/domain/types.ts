@@ -51,6 +51,7 @@ export type Combatant = {
   ac: number;
   baseAc: number;
   initiative: number;
+  damage?: string;
   statuses: StatusName[];
   selectionOrder?: number;
 };
