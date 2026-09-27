@@ -3,6 +3,8 @@ import { Button } from "../../components/ui/Button";
 import { CombatantCard } from "./CombatantCard";
 import { CombatantModal } from "./CombatantModal";
 import { ConfirmationDialog } from "./ConfirmationDialog";
+import { useState } from "react";
+import { CardViewer, cardNames } from "../cards/CardViewer";
 
 type Props = {
   state: AppState;
@@ -31,6 +33,7 @@ export function BattleScreen({
   onCancelConfirmation,
   onConfirmEndDungeon,
 }: Props) {
+  const [viewedCard, setViewedCard] = useState<string | null>(null);
   const selected = state.combatants.find((combatant) => combatant.id === state.ui.selectedId);
   const editableSelected =
     selected && state.ui.modalDraft ? { ...selected, ...state.ui.modalDraft } : selected;
@@ -52,9 +55,9 @@ export function BattleScreen({
             <CombatantCard
               combatant={combatant}
               position={index + 1}
-              level={state.game?.currentRoom && state.game.currentRoom >= 6 ? 2 : 1}
               key={combatant.id}
               onSelect={onSelect}
+              onViewCard={(name) => setViewedCard(cardNames.includes(name) ? name : null)}
             />
           ))}
         </div>
@@ -84,6 +87,7 @@ export function BattleScreen({
             onConfirm={onConfirmEndDungeon}
           />
         )}
+        {viewedCard && <CardViewer cardName={viewedCard} onClose={() => setViewedCard(null)} />}
       </section>
     </main>
   );
